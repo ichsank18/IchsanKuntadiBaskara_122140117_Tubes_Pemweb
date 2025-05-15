@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import TaskCard from "../components/TaskCard";
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState([]);
@@ -7,68 +8,90 @@ export default function Dashboard() {
 
   const token = localStorage.getItem("token");
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+  };
+  
+
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/tasks", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setTasks(res.data))
-      .catch((err) => console.error(err));
+    // Dummy data tugas
+    const dummyTasks = [
+      { id: 1, title: "Belajar React" },
+      { id: 2, title: "Mengerjakan tugas Pyramid" },
+      { id: 3, title: "Buat dokumentasi API" },
+      { id: 4, title: "Refactor halaman Dashboard" },
+    ];
+    setTasks(dummyTasks);
   }, []);
+  
 
-  const addTask = async () => {
-    try {
-      const res = await axios.post(
-        "http://localhost:8000/api/tasks",
-        { title: newTask },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setTasks([...tasks, res.data]);
-      setNewTask("");
-    } catch (err) {
-      alert("Gagal menambah tugas.");
-    }
+  const addTask = () => {
+    const newId = tasks.length ? tasks[tasks.length - 1].id + 1 : 1;
+    const task = { id: newId, title: newTask };
+    setTasks([...tasks, task]);
+    setNewTask("");
+  };
+  
+
+  const deleteTask = (id) => {
+    setTasks(tasks.filter((task) => task.id !== id));
   };
 
-  const deleteTask = async (id) => {
-    try {
-      await axios.delete(`http://localhost:8000/api/tasks/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setTasks(tasks.filter((task) => task.id !== id));
-    } catch (err) {
-      alert("Gagal menghapus tugas.");
-    }
+  const handleEdit = (id, newTitle) => {
+    const updatedTasks = tasks.map((task) =>
+      task.id === id ? { ...task, title: newTitle } : task
+    );
+    setTasks(updatedTasks);
   };
+  
+  
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl mb-4">Dashboard Tugas</h1>
-      <div className="flex gap-2 mb-4">
-        <input
-          type="text"
-          placeholder="Tugas baru"
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
-          className="p-2 border w-full"
-        />
-        <button onClick={addTask} className="bg-blue-500 text-white px-4">
-          Tambah
+    <div className="min-h-screen bg-gray-50 px-4 py-6">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8 max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-800">📋 Dashboard Tugas</h1>
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded shadow-md transition"
+        >
+          Logout
         </button>
       </div>
-      <ul>
+  
+      {/* Input Tugas */}
+      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow p-6 mb-8">
+        <div className="flex gap-3">
+          <input
+            type="text"
+            placeholder="Tugas baru..."
+            value={newTask}
+            onChange={(e) => setNewTask(e.target.value)}
+            className="flex-1 border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <button
+            onClick={addTask}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md shadow transition"
+          >
+            Tambah
+          </button>
+        </div>
+      </div>
+  
+      {/* Daftar Tugas */}
+      <div className="max-w-4xl mx-auto space-y-4">
         {tasks.map((task) => (
-          <li key={task.id} className="flex justify-between border-b py-2">
-            <span>{task.title}</span>
-            <button
-              onClick={() => deleteTask(task.id)}
-              className="text-red-500"
-            >
-              Hapus
-            </button>
-          </li>
+          <TaskCard
+            key={task.id}
+            task={task}
+            onDelete={deleteTask}
+            onEdit={handleEdit}
+          />
         ))}
-      </ul>
+      </div>
     </div>
   );
+  
+  
 }

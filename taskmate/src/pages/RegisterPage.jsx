@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 export default function RegisterPage() {
@@ -24,15 +24,20 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <form onSubmit={handleRegister} className="p-4 border rounded w-80">
-        <h2 className="text-xl mb-4">Daftar TaskMate</h2>
+    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-green-100 to-green-300">
+      <form
+        onSubmit={handleRegister}
+        className="bg-white p-8 rounded-xl shadow-lg w-96"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center text-green-700">
+          Daftar TaskMate
+        </h2>
         <input
           type="text"
           placeholder="Nama"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full p-2 border mb-2"
+          className="w-full p-3 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-green-400"
           required
         />
         <input
@@ -40,7 +45,7 @@ export default function RegisterPage() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-2 border mb-2"
+          className="w-full p-3 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-green-400"
           required
         />
         <input
@@ -48,12 +53,21 @@ export default function RegisterPage() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 border mb-2"
+          className="w-full p-3 border rounded mb-6 focus:outline-none focus:ring-2 focus:ring-green-400"
           required
         />
-        <button type="submit" className="w-full bg-green-500 text-white p-2">
-          Register
+        <button
+          type="submit"
+          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+        >
+          Daftar
         </button>
+        <p className="mt-4 text-center text-sm">
+          Sudah punya akun?{" "}
+          <Link to="/" className="text-green-600 hover:underline">
+            Login di sini
+          </Link>
+        </p>
       </form>
     </div>
   );
