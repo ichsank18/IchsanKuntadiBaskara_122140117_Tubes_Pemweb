@@ -11,15 +11,23 @@ export default function RegisterPage() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8000/api/register", {
+      const res = await axios.post("http://localhost:6543/api/register", {
         name,
         email,
         password,
       });
+  
+      console.log("Register response:", res);
+  
       alert("Registrasi berhasil. Silakan login.");
-      navigate("/");
+      navigate("/"); // Arahkan ke halaman login
     } catch (err) {
-      alert("Registrasi gagal!");
+      console.error("Registration error:", err);
+      if (err.response && err.response.data && err.response.data.message) {
+        alert(`Registrasi gagal: ${err.response.data.message}`);
+      } else {
+        alert("Registrasi gagal! Terjadi kesalahan pada server atau jaringan.");
+      }
     }
   };
 
